@@ -1,0 +1,90 @@
+apply plugin: 'com.android.application'
+apply plugin: 'me.tatarka.retrolambda'
+apply plugin: 'blockcanaryex'
+
+android {
+    compileSdkVersion rootProject.ext.android["compileSdkVersion"]
+    buildToolsVersion rootProject.ext.android["buildToolsVersion"]
+    useLibrary 'org.apache.http.legacy'
+
+/*    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }*/
+
+    defaultConfig {
+        applicationId "com.pczhu.weatheralarmclockapp"
+        minSdkVersion rootProject.ext.android["minSdkVersion"]
+        targetSdkVersion rootProject.ext.android["targetSdkVersion"]
+        versionCode rootProject.ext.android["versionCode"]
+        versionName rootProject.ext.android["versionName"]
+        testInstrumentationRunner rootProject.ext.dependencies["androidJUnitRunner"]
+        multiDexEnabled true
+    }
+    buildTypes {
+
+        debug {
+            buildConfigField "boolean", "LOG_DEBUG", "true"
+            buildConfigField "boolean", "USE_CANARY", "true"
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        release {
+            buildConfigField "boolean", "LOG_DEBUG", "false"
+            buildConfigField "boolean", "USE_CANARY", "false"
+            minifyEnabled true
+            shrinkResources true
+            zipAlignEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    lintOptions {
+        disable 'InvalidPackage'
+        disable "ResourceType"
+        abortOnError false
+    }
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.android.support:multidex:1.0.1'
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile rootProject.ext.dependencies["appcompat-v7"]
+    compile rootProject.ext.dependencies["design"]
+
+    //tools
+    provided rootProject.ext.dependencies["javax.annotation"]
+    annotationProcessor rootProject.ext.dependencies["dagger2-compiler"]
+    //view
+    annotationProcessor rootProject.ext.dependencies["butterknife-compiler"]
+    compile rootProject.ext.dependencies["paginate"]
+    compile rootProject.ext.dependencies["ARouter"]
+    //arms
+    //    compile 'me.jessyan:arms:2.0.0'
+    //test
+    testCompile rootProject.ext.dependencies["junit"]
+    debugCompile rootProject.ext.dependencies["canary-debug"]
+    releaseCompile rootProject.ext.dependencies["canary-release"]
+    testCompile rootProject.ext.dependencies["canary-release"]
+    annotationProcessor rootProject.ext.dependencies["logansquare-compiler"]
+    debugCompile project(path: ':pczhulib', configuration: 'debug')
+    releaseCompile project(path: ':pczhulib', configuration: 'release')
+    compile(rootProject.ext.dependencies["BaseRecyclerViewAdapterHelper"]) {
+        exclude module: 'com.android.support'
+    }
+//    compile project(':runtime')
+//    compile project(':compiler')
+
+    debugCompile rootProject.ext.dependencies["BlockCanaryExJRT"]
+    releaseCompile rootProject.ext.dependencies["BlockCanaryExJRTNoOp"]
+    testCompile rootProject.ext.dependencies["BlockCanaryExJRTNoOp"]
+
+}
